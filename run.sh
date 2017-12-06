@@ -12,4 +12,4 @@ then
    # Do something knowing the pid exists, i.e. the process with $PID is running
 else
    echo "Process didn't start"
-fig
+fi
