@@ -20,13 +20,12 @@ class ScheduledMessage:
 def getParsedMessages(inputfile):
     messages = list()
 
-    with inputfile as input:
-        spamreader = csv.DictReader(input, delimiter=',', quotechar='"')
-        for row in spamreader:
-            for s in row["schedule"].split('-'):
-                schedule_timing = int(s.replace('s', ''))
-                message = ScheduledMessage(email=row["email"], message=row["text"], timing=schedule_timing)
-                messages.append(message)
+    spamreader = csv.DictReader(inputfile, delimiter=',', quotechar='"')
+    for row in spamreader:
+        for s in row["schedule"].split('-'):
+            schedule_timing = int(s.replace('s', ''))
+            message = ScheduledMessage(email=row["email"], message=row["text"], timing=schedule_timing)
+            messages.append(message)
     messages = sorted(messages, key=lambda x: x.timing)
     return messages
 
@@ -40,15 +39,16 @@ def __main__():
 
     #put messages from file to sorted list
     messages = getParsedMessages(args.input)
+    args.input.close()
 
 
     #Init variables that we need in message loop
-    previous_timing = 0
-    cumulative_time_delta = 0
-    start_time = None
+    previous_timing = 0 #Schedule time of previous message
+    cumulative_time_delta = 0 #Time that we spent in sending message
+    start_time = None #Variable that is used to store time in processing and sending messages
 
 
-    #iterating throw list with possibility to delete undemanded items
+    #iterating throw list as it was queue with possibility to delete undemanded items
     while messages:
         f = messages.pop(0)
 
